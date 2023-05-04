@@ -1,8 +1,9 @@
-import { Alert } from 'react-native'
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState } from 'react'
+import { Alert } from 'react-native'
+
 import * as WebBrowser from 'expo-web-browser'
 import * as Google from 'expo-auth-session/providers/google'
+import { Realm, useApp } from '@realm/react'
 
 import { ANDROID_CLIENT_ID, IOS_CLIENT_ID } from '@env'
 
@@ -16,7 +17,10 @@ WebBrowser.maybeCompleteAuthSession()
 export function Signin() {
   const [isAuthenticating, setIsAuthenticating] = useState(false)
 
-  const [_, response, googleSignIn] = Google.useAuthRequest({
+  const app = useApp()
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [request, response, googleSignIn] = Google.useAuthRequest({
     androidClientId: ANDROID_CLIENT_ID,
     iosClientId: IOS_CLIENT_ID,
     scopes: ['profile', 'email'],
@@ -35,12 +39,24 @@ export function Signin() {
   useEffect(() => {
     if (response?.type === 'success') {
       if (response.authentication?.idToken) {
+        const credentials = Realm.Credentials.jwt(
+          response.authentication.idToken,
+        )
+
+        app
+          .logIn(credentials)
+          .catch(() =>
+            Alert.alert(
+              'Entrar',
+              'Não foi possível conectar a sua conta Google.',
+            ),
+          )
       } else {
         Alert.alert('Entrar', 'Não foi possível conectar a sua conta Google.')
         setIsAuthenticating(false)
       }
     }
-  }, [response])
+  }, [response, app])
 
   return (
     <Container source={backgroundImg}>
