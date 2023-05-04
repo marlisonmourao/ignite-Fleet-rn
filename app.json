@@ -15,13 +15,15 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.marlisonmourao.ignitefleet"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#202024"
-      }
+      },
+      "package": "com.marlisonmourao.ignitefleet"
     },
     "web": {
       "favicon": "./assets/favicon.png"
