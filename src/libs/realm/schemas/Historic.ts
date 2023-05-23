@@ -6,6 +6,7 @@ type GerenateProps = {
   license_plate: string
 }
 
+// eslint-disable-next-line no-use-before-define
 export class Historic extends Realm.Object<Historic> {
   _id!: string
   user_id!: string
