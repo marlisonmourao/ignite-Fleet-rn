@@ -14,6 +14,7 @@ import { REAL_APP_ID } from '@env'
 import { Signin } from '@screens/Signin'
 import { Loading } from '@components/Loading'
 import { Routes } from '@routes/index'
+import { RealmProvider } from './src/libs/realm'
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -28,14 +29,18 @@ export default function App() {
   return (
     <AppProvider id={REAL_APP_ID}>
       <ThemeProvider theme={theme}>
-        <SafeAreaProvider>
+        <SafeAreaProvider
+          style={{ flex: 1, backgroundColor: theme.colors.GRAY_800 }}
+        >
           <StatusBar
             barStyle="light-content"
             backgroundColor="transparent"
             translucent
           />
           <UserProvider fallback={Signin}>
-            <Routes />
+            <RealmProvider>
+              <Routes />
+            </RealmProvider>
           </UserProvider>
         </SafeAreaProvider>
       </ThemeProvider>

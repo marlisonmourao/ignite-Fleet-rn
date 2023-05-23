@@ -34,7 +34,7 @@
         "./src/routes/*"
       ],
       "@libs/*": [
-        "./src/routes/*"
+        "./src/libs/*"
       ]
     }
   },
