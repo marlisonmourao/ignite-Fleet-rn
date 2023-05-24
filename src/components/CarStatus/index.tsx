@@ -24,7 +24,7 @@ export function CarStatus({ licensePlate = null, ...rest }: Props) {
 
       <Message>
         {message}
-        <TextHighlight>Clique aqui para regsiter a {status}</TextHighlight>
+        <TextHighlight>Clique aqui para registrar a {status}</TextHighlight>
       </Message>
     </Container>
   )
