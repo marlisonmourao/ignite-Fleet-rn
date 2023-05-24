@@ -53,6 +53,28 @@ export function Arrivel() {
     goBack()
   }
 
+  function ArrivalRegister() {
+    try {
+      if (!historic) {
+        return Alert.alert(
+          'Erro',
+          'Não foi possível obter os dados para chegada do veículo..',
+        )
+      }
+
+      realm.write(() => {
+        historic.status = 'arrival'
+        historic.updated_at = new Date()
+      })
+
+      Alert.alert('Chegada', 'Chegada registrada com sucesso!')
+      goBack()
+    } catch (error) {
+      console.log(error)
+      Alert.alert('Erro', 'Ocorreu um erro ao registrar a chegada do veículo.')
+    }
+  }
+
   return (
     <Container>
       <HeaderDeparture title="Chegada" />
@@ -68,7 +90,7 @@ export function Arrivel() {
 
         <Footer>
           <ButtonIcon icon={X} onPress={handleRemoveVehicleUsage} />
-          <Button title="Registrar Chegada" />
+          <Button title="Registrar Chegada" onPress={ArrivalRegister} />
         </Footer>
       </Content>
     </Container>
