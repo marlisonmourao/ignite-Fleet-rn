@@ -1,3 +1,6 @@
+// Add this line to your `index.js`
+import 'react-native-get-random-values'
+
 import { StatusBar } from 'react-native'
 import { ThemeProvider } from 'styled-components/native'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
