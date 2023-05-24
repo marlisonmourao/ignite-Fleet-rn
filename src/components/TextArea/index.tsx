@@ -1,12 +1,14 @@
+import { forwardRef } from 'react'
 import { useTheme } from 'styled-components/native'
-import { TextInputProps } from 'react-native'
+import { TextInput, TextInputProps } from 'react-native'
 import { Container, Input, Label } from './styles'
 
 type Props = TextInputProps & {
   label: string
 }
 
-export function TextArea({ label, ...rest }: Props) {
+// eslint-disable-next-line react/display-name
+const TextArea = forwardRef<TextInput, Props>(({ label, ...rest }, ref) => {
   const { colors } = useTheme()
 
   return (
@@ -14,6 +16,7 @@ export function TextArea({ label, ...rest }: Props) {
       <Label>{label}</Label>
 
       <Input
+        ref={ref}
         placeholderTextColor={colors.GRAY_400}
         multiline
         autoCapitalize="sentences"
@@ -21,4 +24,6 @@ export function TextArea({ label, ...rest }: Props) {
       />
     </Container>
   )
-}
+})
+
+export { TextArea }
