@@ -4,6 +4,7 @@ import { useTheme } from 'styled-components'
 import { Container, Departure, Info, LicensePlate } from './styles'
 
 export type HistoricCardProps = {
+  id: string
   licensePlate: string
   created_at: string
   isSync: boolean
@@ -17,7 +18,7 @@ export function HistoricCard({ data, ...rest }: Props) {
   const { colors } = useTheme()
 
   return (
-    <Container {...rest}>
+    <Container activeOpacity={0.7} {...rest}>
       <Info>
         <LicensePlate>{data.licensePlate}</LicensePlate>
 
