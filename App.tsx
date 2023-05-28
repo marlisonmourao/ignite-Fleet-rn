@@ -17,7 +17,8 @@ import { REAL_APP_ID } from '@env'
 import { Signin } from '@screens/Signin'
 import { Loading } from '@components/Loading'
 import { Routes } from '@routes/index'
-import { RealmProvider } from './src/libs/realm'
+
+import { RealmProvider, syncConfig } from './src/libs/realm'
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -41,7 +42,7 @@ export default function App() {
             translucent
           />
           <UserProvider fallback={Signin}>
-            <RealmProvider>
+            <RealmProvider sync={syncConfig} fallback={Loading}>
               <Routes />
             </RealmProvider>
           </UserProvider>
