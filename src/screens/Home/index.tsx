@@ -3,11 +3,16 @@ import { FlatList, Alert } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import dayjs from 'dayjs'
 import { useUser } from '@realm/react'
-import { useQuery, useRealm } from '@libs/realm'
+import Toask from 'react-native-toast-message'
 
 import { Container, Content, Label, Title } from './styles'
 
 import { Historic } from '@libs/realm/schemas/Historic'
+import { useQuery, useRealm } from '@libs/realm'
+import {
+  getLastSyncTimestamp,
+  saveLastSyncTimestamp,
+} from '@libs/asyncStorage/syncStorage'
 
 import { Header } from '@components/Header'
 import { CarStatus } from '@components/CarStatus'
@@ -44,16 +49,19 @@ export function Home() {
     }
   }
 
-  function fetchHistoric() {
+  async function fetchHistoric() {
     try {
       const response = historic.filtered(
         "status = 'arrival' SORT(created_at DESC)",
       )
+
+      const lastSync = await getLastSyncTimestamp()
+
       const formattedHistoric = response.map((historic) => {
         return {
           id: historic._id.toString(),
           licensePlate: historic.license_plate,
-          isSync: false,
+          isSync: lastSync! > historic.updated_at.getTime(),
           created_at: dayjs(historic.created_at).format(
             '[Saída em] DD/MM/YYYY [ás] HH:mm',
           ),
@@ -69,6 +77,23 @@ export function Home() {
 
   function handleHistoricDetails(id: string) {
     navigation.navigate('arrival', { id })
+  }
+
+  async function progressNotification(
+    transferred: number,
+    transferable: number,
+  ) {
+    const percentage = (transferred / transferable) * 100
+
+    if (percentage === 100) {
+      await saveLastSyncTimestamp()
+      fetchHistoric()
+
+      Toask.show({
+        text1: 'Todos os dados estão sincronizados',
+        type: 'info',
+      })
+    }
   }
 
   useEffect(() => {
@@ -98,6 +123,20 @@ export function Home() {
       mutableSubs.add(historyByUserQuery, { name: 'history_by_user' })
     })
   }, [realm])
+
+  useEffect(() => {
+    const syncSession = realm.syncSession
+
+    if (syncSession) {
+      syncSession?.addProgressNotification(
+        Realm.ProgressDirection.Upload,
+        Realm.ProgressMode.ReportIndefinitely,
+        progressNotification,
+      )
+    }
+
+    return () => syncSession?.removeProgressNotification(progressNotification)
+  }, [])
 
   return (
     <Container>
