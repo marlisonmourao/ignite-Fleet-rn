@@ -2,9 +2,11 @@ import 'react-native-get-random-values'
 import './src/libs/dayjs'
 
 import { StatusBar } from 'react-native'
+import { WifiSlash } from 'phosphor-react-native'
 import { ThemeProvider } from 'styled-components/native'
-import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { AppProvider, UserProvider } from '@realm/react'
+import { useNetInfo } from '@react-native-community/netinfo'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
 import {
   useFonts,
   Roboto_400Regular,
@@ -19,12 +21,15 @@ import { Loading } from '@components/Loading'
 import { Routes } from '@routes/index'
 
 import { RealmProvider, syncConfig } from './src/libs/realm'
+import { TopMessage } from '@components/TopMessage'
 
 export default function App() {
   const [fontsLoaded] = useFonts({
     Roboto_400Regular,
     Roboto_700Bold,
   })
+
+  const netInfo = useNetInfo()
 
   if (!fontsLoaded) {
     return <Loading />
@@ -41,6 +46,11 @@ export default function App() {
             backgroundColor="transparent"
             translucent
           />
+
+          {!netInfo.isConnected && (
+            <TopMessage title="Você está off-line." icon={WifiSlash} />
+          )}
+
           <UserProvider fallback={Signin}>
             <RealmProvider sync={syncConfig} fallback={Loading}>
               <Routes />
