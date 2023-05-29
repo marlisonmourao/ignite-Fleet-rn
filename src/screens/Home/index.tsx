@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { FlatList, Alert } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
+import { CloudArrowDown } from 'phosphor-react-native'
 import dayjs from 'dayjs'
 import { useUser } from '@realm/react'
 import Toask from 'react-native-toast-message'
@@ -17,9 +18,11 @@ import {
 import { Header } from '@components/Header'
 import { CarStatus } from '@components/CarStatus'
 import { HistoricCard, HistoricCardProps } from '@components/HistoricCard'
+import { TopMessage } from '@components/TopMessage'
 
 export function Home() {
   const [vehicleInUse, setVehicleInUse] = useState<Historic | null>(null)
+  const [percentageToSync, setPercentageToSync] = useState<string | null>(null)
   const [vehicleHistoric, setVehicleHistoric] = useState<HistoricCardProps[]>(
     [],
   )
@@ -87,12 +90,17 @@ export function Home() {
 
     if (percentage === 100) {
       await saveLastSyncTimestamp()
-      fetchHistoric()
+      await fetchHistoric()
+      setPercentageToSync(null)
 
       Toask.show({
         text1: 'Todos os dados estão sincronizados',
         type: 'info',
       })
+    }
+
+    if (percentage < 100) {
+      setPercentageToSync(`${percentage.toFixed(0)}% sincronizado.`)
     }
   }
 
@@ -140,6 +148,10 @@ export function Home() {
 
   return (
     <Container>
+      {percentageToSync && (
+        <TopMessage title={percentageToSync} icon={CloudArrowDown} />
+      )}
+
       <Header />
 
       <Content>
