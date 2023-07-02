@@ -7,6 +7,7 @@ import {
   watchPositionAsync,
   LocationAccuracy,
   LocationSubscription,
+  LocationObjectCoords,
 } from 'expo-location'
 import { Car } from 'phosphor-react-native'
 
@@ -14,6 +15,7 @@ import { useUser } from '@realm/react'
 
 import { Container, Content, Message } from './styles'
 
+import { Map } from '@components/Map'
 import { Button } from '@components/Button'
 import { Loading } from '@components/Loading'
 import { TextArea } from '@components/TextArea'
@@ -32,6 +34,8 @@ export function Departure() {
   const [isRegistering, setIsRegistering] = useState(false)
   const [isLoadingLocation, setIsLoadingLocation] = useState(true)
   const [currentAddress, setCurrentAddress] = useState<string | null>(null)
+  const [currentCoords, setCurrentCoords] =
+    useState<LocationObjectCoords | null>(null)
 
   const [locationForegroundPermission, requestLocationForegroundPermission] =
     useForegroundPermissions()
@@ -99,6 +103,7 @@ export function Departure() {
         timeInterval: 1000,
       },
       (location) => {
+        setCurrentCoords(location.coords)
         getAddressLocation(location.coords)
           .then((address) => {
             if (address) {
@@ -139,6 +144,8 @@ export function Departure() {
       <HeaderDeparture title="Saída" />
       <KeyboardAwareScrollView extraHeight={100}>
         <ScrollView showsVerticalScrollIndicator={false}>
+          {currentCoords && <Map coordinates={[currentCoords]} />}
+
           <Content>
             {currentAddress && (
               <LocationInfo
