@@ -8,6 +8,7 @@ import {
   LocationAccuracy,
   LocationSubscription,
   LocationObjectCoords,
+  requestBackgroundPermissionsAsync,
 } from 'expo-location'
 import { Car } from 'phosphor-react-native'
 
@@ -65,7 +66,25 @@ export function Departure() {
         )
       }
 
+      if (!currentCoords?.latitude && !currentCoords?.longitude) {
+        return Alert.alert(
+          'Localização',
+          'Não foi possível obter a localização. Tente novamente',
+        )
+      }
+
       setIsRegistering(true)
+
+      const backgroundPermissions = await requestBackgroundPermissionsAsync()
+
+      if (!backgroundPermissions.granted) {
+        setIsRegistering(false)
+
+        return Alert.alert(
+          'Localização',
+          'É necessário permitir que o App tenha acesso a localização em segundo plano. Acesse as configurações do dispositivo e habilite "Permitir o tempo todo".',
+        )
+      }
 
       realm.write(() => {
         realm.create(
