@@ -13,6 +13,7 @@ import {
 import { Car } from 'phosphor-react-native'
 
 import { useUser } from '@realm/react'
+import { startLocationTask } from '../../tasks/backgroundTaskLocation'
 
 import { Container, Content, Message } from './styles'
 
@@ -85,6 +86,8 @@ export function Departure() {
           'É necessário permitir que o App tenha acesso a localização em segundo plano. Acesse as configurações do dispositivo e habilite "Permitir o tempo todo".',
         )
       }
+
+      startLocationTask()
 
       realm.write(() => {
         realm.create(
