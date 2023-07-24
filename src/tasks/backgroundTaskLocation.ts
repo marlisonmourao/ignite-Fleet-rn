@@ -14,7 +14,7 @@ TaskManager.defineTask(BACKGROUND_TASK_NAME, ({ data, error }: any) => {
       throw error
     }
 
-    const { coords, timestamp } = data.location[0]
+    const { coords, timestamp } = data.locations[0]
 
     const currentLocation = {
       latitude: coords.latitude,
