@@ -65,7 +65,7 @@ export function Arrival() {
     goBack()
   }
 
-  async function ArrivalRegister() {
+  async function handleArrivalRegister() {
     try {
       if (!historic) {
         return Alert.alert(
@@ -74,9 +74,12 @@ export function Arrival() {
         )
       }
 
+      const locations = await getStorageLocation()
+
       realm.write(() => {
         historic.status = 'arrival'
         historic.updated_at = new Date()
+        historic.coords.push(...locations)
       })
 
       await stopLocationTask()
@@ -125,7 +128,7 @@ export function Arrival() {
       {historic?.status === 'departure' && (
         <Footer>
           <ButtonIcon icon={X} onPress={handleRemoveVehicleUsage} />
-          <Button title="Registrar Chegada" onPress={ArrivalRegister} />
+          <Button title="Registrar Chegada" onPress={handleArrivalRegister} />
         </Footer>
       )}
 
