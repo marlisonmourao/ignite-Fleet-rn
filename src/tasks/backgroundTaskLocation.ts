@@ -5,7 +5,10 @@ import {
   hasStartedLocationUpdatesAsync,
   stopLocationUpdatesAsync,
 } from 'expo-location'
-import { saveStorageLocation } from '@libs/asyncStorage/locationStorage'
+import {
+  removeStorageLocation,
+  saveStorageLocation,
+} from '@libs/asyncStorage/locationStorage'
 
 export const BACKGROUND_TASK_NAME = 'location-tracking'
 
@@ -39,6 +42,7 @@ export async function startLocationTask() {
 
     if (hashStarted) {
       await stopLocationUpdatesAsync(BACKGROUND_TASK_NAME)
+      await removeStorageLocation()
     }
 
     await startLocationUpdatesAsync(BACKGROUND_TASK_NAME, {
@@ -59,6 +63,7 @@ export async function stopLocationTask() {
 
     if (hashStarted) {
       await stopLocationUpdatesAsync(BACKGROUND_TASK_NAME)
+      await removeStorageLocation()
     }
   } catch (error) {
     console.log(error)
