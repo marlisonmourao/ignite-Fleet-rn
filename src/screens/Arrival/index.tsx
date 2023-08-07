@@ -4,6 +4,7 @@ import { useNavigation, useRoute } from '@react-navigation/native'
 import { X } from 'phosphor-react-native'
 import { LatLng } from 'react-native-maps'
 import { BSON } from 'realm'
+import dayjs from 'dayjs'
 
 import {
   AsyncMessage,
@@ -17,6 +18,7 @@ import {
 
 import { HeaderDeparture } from '@components/HeaderDeparture'
 import { ButtonIcon } from '@components/ButtonIcon'
+import { Locations } from '@components/Locations'
 import { Button } from '@components/Button'
 import { Map } from '@components/Map'
 
@@ -25,6 +27,8 @@ import { Historic } from '@libs/realm/schemas/Historic'
 import { getLastSyncTimestamp } from '@libs/asyncStorage/syncStorage'
 import { stopLocationTask } from '../../tasks/backgroundTaskLocation'
 import { getStorageLocation } from '@libs/asyncStorage/locationStorage'
+import { getAddressLocation } from '@utils/getAddressLocation'
+import { LocationInfoProps } from '@components/LocationInfo'
 
 type RouteParamsProps = {
   id: string
@@ -33,6 +37,10 @@ type RouteParamsProps = {
 export function Arrival() {
   const [dataNotSynced, setDataNotSynced] = useState(false)
   const [coordinates, setCoordinates] = useState<LatLng[]>([])
+  const [departure, setDeparture] = useState<LocationInfoProps>(
+    {} as LocationInfoProps,
+  )
+  const [arrival, setArrival] = useState<LocationInfoProps | null>(null)
   const router = useRoute()
 
   const { id } = router.params as RouteParamsProps
@@ -101,8 +109,34 @@ export function Arrival() {
     const updatedAt = historic!.updated_at.getTime()
     setDataNotSynced(updatedAt > lastSync!)
 
-    const locationsStorage = await getStorageLocation()
-    setCoordinates(locationsStorage)
+    if (historic?.status === 'departure') {
+      const locationsStorage = await getStorageLocation()
+      setCoordinates(locationsStorage)
+    } else {
+      setCoordinates(historic?.coords ?? [])
+    }
+
+    if (historic?.coords[0]) {
+      const departureStreetName = await getAddressLocation(historic?.coords[0])
+      setDeparture({
+        label: `Saindo em ${departureStreetName ?? ''}`,
+        description: dayjs(new Date(historic?.coords[0].timestamp)).format(
+          'DD/MM/YYYY [às] HH:mm',
+        ),
+      })
+    }
+
+    if (historic?.status === 'arrival') {
+      const lastLocation = historic?.coords[historic.coords.length - 1]
+      const arrivalStreetName = await getAddressLocation(lastLocation)
+
+      setArrival({
+        label: `Chegando em ${arrivalStreetName ?? ''}`,
+        description: dayjs(new Date(lastLocation.timestamp)).format(
+          'DD/MM/YYYY [às] HH:mm',
+        ),
+      })
+    }
   }
 
   useEffect(() => {
@@ -116,6 +150,8 @@ export function Arrival() {
       {coordinates.length > 0 && <Map coordinates={coordinates} />}
 
       <Content>
+        <Locations departure={departure} arrival={arrival} />
+
         <Label>Placa do veículo</Label>
 
         <LicensePlate>{historic?.license_plate}</LicensePlate>
