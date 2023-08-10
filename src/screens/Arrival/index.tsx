@@ -29,6 +29,7 @@ import { stopLocationTask } from '../../tasks/backgroundTaskLocation'
 import { getStorageLocation } from '@libs/asyncStorage/locationStorage'
 import { getAddressLocation } from '@utils/getAddressLocation'
 import { LocationInfoProps } from '@components/LocationInfo'
+import { Loading } from '@components/Loading'
 
 type RouteParamsProps = {
   id: string
@@ -36,6 +37,7 @@ type RouteParamsProps = {
 
 export function Arrival() {
   const [dataNotSynced, setDataNotSynced] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [coordinates, setCoordinates] = useState<LatLng[]>([])
   const [departure, setDeparture] = useState<LocationInfoProps>(
     {} as LocationInfoProps,
@@ -137,11 +139,17 @@ export function Arrival() {
         ),
       })
     }
+
+    setIsLoading(false)
   }
 
   useEffect(() => {
     getLocationInfo()
   }, [historic])
+
+  if (isLoading) {
+    return <Loading />
+  }
 
   return (
     <Container>
