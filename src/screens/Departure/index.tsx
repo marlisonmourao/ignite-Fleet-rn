@@ -15,7 +15,7 @@ import { Car } from 'phosphor-react-native'
 import { useUser } from '@realm/react'
 import { startLocationTask } from '../../tasks/backgroundTaskLocation'
 
-import { Container, Content, Message } from './styles'
+import { Container, Content, Message, MessageContent } from './styles'
 
 import { Map } from '@components/Map'
 import { Button } from '@components/Button'
@@ -27,6 +27,8 @@ import { LicensePlateInput } from '@components/LicensePlateInput'
 
 import { licensePlateValidate } from '@utils/licensePlateValidate'
 import { getAddressLocation } from '@utils/getAddressLocation'
+import { openSettings } from '@utils/openSettings'
+
 import { Historic } from '@libs/realm/schemas/Historic'
 import { useRealm } from '@libs/realm'
 
@@ -84,6 +86,12 @@ export function Departure() {
         return Alert.alert(
           'Localização',
           'É necessário permitir que o App tenha acesso a localização em segundo plano. Acesse as configurações do dispositivo e habilite "Permitir o tempo todo".',
+          [
+            {
+              text: 'Abrir configurações',
+              onPress: openSettings,
+            },
+          ],
         )
       }
 
@@ -155,11 +163,16 @@ export function Departure() {
       <Container>
         <HeaderDeparture title="Saída" />
 
-        <Message>
-          Você precisa permitir que o aplicativo tenha acesso a localização para
-          utilizar essa funcionalidade. Por favor, acesse as configurações do
-          seu dispositivo para conceder essa permissão ao aplicativo
-        </Message>
+        <MessageContent>
+          <Message>
+            Você precisa permitir que o aplicativo tenha acesso a localização
+            para utilizar essa funcionalidade. Por favor, acesse as
+            configurações do seu dispositivo para conceder essa permissão ao
+            aplicativo
+          </Message>
+
+          <Button title="abrir configurações" onPress={openSettings} />
+        </MessageContent>
       </Container>
     )
   }
